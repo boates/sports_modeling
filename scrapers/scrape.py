@@ -34,7 +34,7 @@ def update(scraper, seasons=[2014], pages=[1,2,3]):
     for season in seasons:
         for page in pages:
 
-            print ' | season: %s; page: %s' % (season, page)
+            print ' |  season: %s; page: %s' % (season, page)
 
             scraper.set_season(season)
             scraper.set_page(page)
