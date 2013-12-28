@@ -5,7 +5,7 @@ Author: Brian Boates
 import sys
 sys.dont_write_bytecode = True
 import re
-from database_helper import DatabaseHelper
+from common.database_helper import DatabaseHelper
 from nhl_scraper import NHLScraper
 from utils.nhl_utils import *
 

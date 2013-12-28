@@ -4,7 +4,7 @@ Author: Brian Boates
 """
 import sys
 sys.dont_write_bytecode = True
-from database_helper import DatabaseHelper
+from common.database_helper import DatabaseHelper
 from game_summary_scraper import GameSummaryScraper
 from game_by_game_scraper import GameByGameScraper
 from penalties_by_game_scraper import PenaltiesByGameScraper
