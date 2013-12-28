@@ -21,6 +21,8 @@ def update(scraper, seasons=[2014], pages=[1,2,3]):
         seasons: int/list | season(s) to scrape
         pages: int/list | page(s) to scrape
     """
+    print ' | Updating %s' % scraper
+
     # if seasons and/or pages are integers, convert to lists
     if type(seasons) != type([]):
         seasons = [seasons]
@@ -32,7 +34,7 @@ def update(scraper, seasons=[2014], pages=[1,2,3]):
     for season in seasons:
         for page in pages:
 
-            print 'Updating | season: %s; page: %s' % (season, page)
+            print ' | season: %s; page: %s' % (season, page)
 
             scraper.set_season(season)
             scraper.set_page(page)
@@ -64,7 +66,6 @@ def main():
 
     # update all scrapers
     for scraper in SCRAPERS:
-        print 'Updating %s' % scraper
         scraper.silent()
         update(scraper)
 
