@@ -70,10 +70,12 @@ class NHLScraper(object):
 
     def set_season(self, season):
         self._season = season
+        self._html = None
         self._data = None
 
     def set_page(self, page):
         self._page = page
+        self._html = None
         self._data = None
 
     def set_max_page(self, max_page):

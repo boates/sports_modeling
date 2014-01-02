@@ -23,6 +23,10 @@ def update(scraper, seasons=[2014], pages=[1,2,3]):
     """
     print ' | Updating %s' % scraper
 
+    # penalties data in chronological order
+    if scraper.get_name() == 'PenaltiesByGameScraper':
+        pages = range(1, scraper.get_max_page())
+
     # if seasons and/or pages are integers, convert to lists
     if type(seasons) != type([]):
         seasons = [seasons]
