@@ -2,17 +2,18 @@
 database_helper.py
 Author: Brian Boates
 """
-import sys
-sys.dont_write_bytecode = True
 import MySQLdb as mdb
 
 class DatabaseHelper(object):
     """
     """
-    def __init__(self, database_name='nhl', host='localhost', user='root'):
-        self._database_name = database_name
+    def __init__(self,
+                 db=None,
+                 host='localhost',
+                 user='root'):
+        self._db = db
         try:
-            self.connection = mdb.connect(host=host, user=user, db=self.get_database_name())
+            self.connection = mdb.connect(host=host, user=user, db=self.get_db())
             self.connection.autocommit(True)
             self.cursor = self.connection.cursor()
         except:
@@ -21,14 +22,14 @@ class DatabaseHelper(object):
 
     def __str__(self):
         s  = '<DatabaseHelper: '
-        s += 'database_name=%s>' % self.get_database_name()
+        s += 'db=%s>' % self.get_db()
         return s
 
     def __repr__(self):
         return self.__str__()
 
-    def get_database_name(self):
-        return self._database_name
+    def get_db(self):
+        return self._db
 
     def close(self):
         if self.cursor:
@@ -37,11 +38,11 @@ class DatabaseHelper(object):
             self.connection.close()
 
     def drop_database(self):
-        self.cursor.execute("DROP DATABASE IF EXISTS "+self.get_database_name())
+        self.cursor.execute("DROP DATABASE IF EXISTS "+self.get_db())
 
     def create_database(self):
-        self.cursor.execute("CREATE SCHEMA IF NOT EXISTS "+self.get_database_name())
-        self.cursor.execute("USE "+self.get_database_name())
+        self.cursor.execute("CREATE SCHEMA IF NOT EXISTS "+self.get_db())
+        self.cursor.execute("USE "+self.get_db())
 
     def execute_query(self, query):
         self.cursor.execute(query)

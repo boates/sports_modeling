@@ -2,29 +2,20 @@
 scrape.py
 Author: Brian Boates
 """
-import sys
-sys.dont_write_bytecode = True
 from common.database_helper import DatabaseHelper
-from game_summary_scraper import GameSummaryScraper
-from game_by_game_scraper import GameByGameScraper
-from penalties_by_game_scraper import PenaltiesByGameScraper
+from scrapers import default_scraper_sets
 
-SCRAPERS = [GameSummaryScraper(database_name='nhl', table_name='game_summaries')
-           ,GameByGameScraper(database_name='nhl', table_name='game_by_game')
-           ,PenaltiesByGameScraper(database_name='nhl', table_name='penalties_by_game')]
-
-
-def update(scraper, seasons=[2014], pages=[1,2,3]):
+def update(scraper, seasons=None, pages=range(1, 82)):
     """
     params:
-        scraper: [...]Scraper object
+        scraper: Scraper object
         seasons: int/list | season(s) to scrape
         pages: int/list | page(s) to scrape
     """
     print ' | Updating %s' % scraper
 
     # penalties data in chronological order
-    if scraper.get_name() == 'PenaltiesByGameScraper':
+    if scraper.get_name() == 'TeamGamePenaltiesScraper':
         pages = range(1, scraper.get_max_page())
 
     # if seasons and/or pages are integers, convert to lists
@@ -33,7 +24,7 @@ def update(scraper, seasons=[2014], pages=[1,2,3]):
     if type(pages) != type([]):
         pages = [pages]
 
-    database_helper = DatabaseHelper(scraper.get_database_name())
+    database_helper = DatabaseHelper(scraper.get_db())
 
     for season in seasons:
         for page in pages:
@@ -54,7 +45,7 @@ def build_from_scratch(scraper):
         scraper: [...]Scraper object
     """
     # blast entire table and re-create
-    database_helper = DatabaseHelper(scraper.get_database_name())
+    database_helper = DatabaseHelper(scraper.get_db())
     database_helper.execute_query(scraper.drop_table_query())
     database_helper.execute_query(scraper.create_table_query())
     database_helper.close()
@@ -63,15 +54,17 @@ def build_from_scratch(scraper):
     all_seasons = [str(i) for i in range(1988, 2015) if i != 2005]
     all_pages = range(1, scraper.get_max_page())
 
-    update(all_seasons, all_pages)
+    update(scraper, all_seasons, all_pages)
 
 
 def main():
 
     # update all scrapers
-    for scraper in SCRAPERS:
-        scraper.silent()
-        update(scraper)
+    scraper_set_key = 'nhl'
+    for scraper in default_scraper_sets[scraper_set_key]:
+        build_from_scratch(scraper)
+#        scraper.silent()
+#        update(scraper)
 
 
 if __name__ == '__main__':

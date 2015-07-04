@@ -1,20 +1,22 @@
 """
-nhl_scraper.py
+scraper.py
 Author: Brian Boates
 """
-import sys
-sys.dont_write_bytecode = True
 import urllib2
 
-class NHLScraper(object):
+class Scraper(object):
     """
     """
-    def __init__(self, season=None, page=None, database_name=None, table_name=None):
-        self._name = 'NHLScraper'
+    def __init__(self,
+                 season=None,
+                 page=None,
+                 db=None,
+                 table=None):
+        self._name = 'Scraper'
         self._season = season
         self._page = page
-        self._database_name = database_name
-        self._table_name = table_name
+        self._db = db
+        self._table = table
         self._column_names = ()
         self._html = None
         self._data = None
@@ -25,8 +27,8 @@ class NHLScraper(object):
         s  = '<%s: ' % self.get_name()
         s += 'season=%s, ' % self.get_season()
         s += 'page=%s, ' % self.get_page()
-        s += 'database_name=%s, ' % self.get_database_name()
-        s += 'table_name=%s>' % self.get_table_name()
+        s += 'db=%s, ' % self.get_db()
+        s += 'table=%s>' % self.get_table()
         return s
 
     def __repr__(self):
@@ -53,14 +55,14 @@ class NHLScraper(object):
     def get_max_page(self):
         return self._max_page
 
-    def get_database_name(self):
-        return self._database_name
+    def get_db(self):
+        return self._db
 
-    def get_table_name(self):
-        return self._table_name
+    def get_table(self):
+        return self._table
 
     def database_table(self):
-        return (self.get_database_name(), self.get_table_name())
+        return (self.get_db(), self.get_table())
 
     def set_name(self, name):
         self._name = name
@@ -81,11 +83,11 @@ class NHLScraper(object):
     def set_max_page(self, max_page):
         self._max_page = max_page
 
-    def set_database_name(self, database_name):
-        self._database_name = database_name
+    def set_db(self, db):
+        self._db = db
 
-    def set_table_name(self, table_name):
-        self._table_name = table_name
+    def set_table(self, table):
+        self._table = table
 
     def verbose(self):
         self._verbose = True
@@ -134,7 +136,7 @@ class NHLScraper(object):
 
 
 def main():
-    nhl_scraper = NHLScraper()
+    nhl_scraper = Scraper()
     nhl_scraper.get_html('http://www.nhl.com')
 
 
