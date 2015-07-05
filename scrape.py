@@ -27,7 +27,7 @@ def update(scraper, rebuild=False):
     if not season_start:
         season_start = scraper.get_min_season()
     season_end = date.today().year + 1
-    seasons = range(season_start, season_end)
+    seasons = [i for i in range(season_start, season_end) if i != 2005] # 2005 lockout
 
     pages = range(1, scraper.get_max_page())
 
@@ -50,7 +50,7 @@ def main():
     scraper_set_key = 'nhl'
     for scraper in default_scraper_sets[scraper_set_key]:
         scraper.silent()
-        update(scraper, rebuild=True)
+        update(scraper)
 
 
 if __name__ == '__main__':
