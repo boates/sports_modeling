@@ -20,15 +20,16 @@ class Scraper(object):
         self._column_names = ()
         self._html = None
         self._data = None
+        self._min_season = None
         self._max_page = None
         self._verbose = True
 
     def __str__(self):
-        s  = '<%s: ' % self.get_name()
+        s  = '<%s: '       % self.get_name()
         s += 'season=%s, ' % self.get_season()
-        s += 'page=%s, ' % self.get_page()
-        s += 'db=%s, ' % self.get_db()
-        s += 'table=%s>' % self.get_table()
+        s += 'page=%s, '   % self.get_page()
+        s += 'db=%s, '     % self.get_db()
+        s += 'table=%s>'   % self.get_table()
         return s
 
     def __repr__(self):
@@ -49,6 +50,9 @@ class Scraper(object):
     def get_season(self):
         return self._season
 
+    def get_min_season(self):
+        return self._min_season
+
     def get_page(self):
         return self._page
 
@@ -68,12 +72,15 @@ class Scraper(object):
         self._name = name
 
     def set_column_names(self, column_names):
-        self._column_names = column_names
+        self._column_names = tuple(column_names)
 
     def set_season(self, season):
         self._season = season
         self._html = None
         self._data = None
+
+    def set_min_season(self, min_season):
+        self._min_season = min_season
 
     def set_page(self, page):
         self._page = page

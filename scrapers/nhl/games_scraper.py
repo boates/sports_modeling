@@ -21,9 +21,8 @@ class GamesScraper(Scraper):
                                            db=db,
                                            table=table)
         self.set_name('GamesScraper')
-        self.set_column_names(('token',
-                               'season',
-                               'game_date',
+        self._metadata_columns = ['season', 'page', 'token']
+        self.set_column_names(['game_date',
                                'away_team',
                                'away_goals',
                                'home_team',
@@ -39,12 +38,15 @@ class GamesScraper(Scraper):
                                'home_powerplay_goals',
                                'home_powerplays',
                                'home_penalty_minutes',
-                               'attendance'))
+                               'attendance'] \
+                                + self._metadata_columns)
+        self._num_data_columns = self.get_num_columns() - len(self._metadata_columns)
+        self.set_min_season(1988)
         self.set_max_page(45)
 
     def get_url(self):
         values = (self.get_season(), self.get_page())
-        return 'http://www.nhl.com/ice/gamestats.htm?fetchKey=%s2ALLSATALL&viewName=summary&sort=gameDate&pg=%s' % values
+        return 'http://www.nhl.com/stats/game?fetchKey=%s2ALLSATAll&viewName=summary&sort=gameDate&gp=1&pg=%s' % values
 
     def clean_html(self, html):
         html = html.replace('</td>', '')
@@ -72,10 +74,10 @@ class GamesScraper(Scraper):
                 keep_looping = False
 
         data = []
-        num_rows = len(parsed_html) / (self.get_num_columns()-2) # 2 extra columns
+        num_rows = len(parsed_html) / self._num_data_columns # 3 extra columns
         for i in xrange(num_rows):
 
-            row = parsed_html[i*(self.get_num_columns()-2):(i+1)*(self.get_num_columns()-2)]
+            row = parsed_html[i*self._num_data_columns:(i+1)*self._num_data_columns]
 
             # format date as YYYY-MM-DD
             row[0] = format_date(row[0])
@@ -87,10 +89,11 @@ class GamesScraper(Scraper):
             # fill in empty results with R for regulation
             row[5] = 'R' if row[5] == '' else row[5]
 
+            # generate a unique identifier
             game_str = row[0] + '_' + row[1] + '_' + row[3]
             game_token = sha.new(game_str).hexdigest()
 
-            row = tuple([game_token, str(self.get_season())] + row)
+            row = tuple(row + [self.get_season(), self.get_page(), game_token])
             if self.is_verbose():
                 print row
 
@@ -100,9 +103,7 @@ class GamesScraper(Scraper):
 
     def create_table_query(self):
         query  = " CREATE TABLE IF NOT EXISTS %s.%s (" % self.database_table()
-        query += " token                VARCHAR(255)  \
-                 , season               INT           \
-                 , game_date            DATE          \
+        query += " game_date            DATE          \
                  , away_team            VARCHAR(3)    \
                  , away_goals           INT           \
                  , home_team            VARCHAR(3)    \
@@ -119,13 +120,17 @@ class GamesScraper(Scraper):
                  , home_powerplays      INT           \
                  , home_penalty_minutes INT           \
                  , attendance           INT           \
+                 , season               INT           \
+                 , page                 INT           \
+                 , token                VARCHAR(255)  \
                  , etl_created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP \
-                 , PRIMARY KEY          (token)       \
-                 , KEY idx_season       (season)      \
-                 , KEY idx_game_date    (game_date)   \
+                 , PRIMARY KEY          (game_date, away_team, home_team) \
                  , KEY idx_away_team    (away_team)   \
                  , KEY idx_home_team    (home_team)   \
                  , KEY idx_result       (result)      \
+                 , KEY idx_season       (season)      \
+                 , KEY idx_page         (page)        \
+                 , UNIQUE KEY idx_token (token)       \
                  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 \
                  "
         return query

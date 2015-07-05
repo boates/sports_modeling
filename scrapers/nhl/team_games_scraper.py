@@ -1,4 +1,6 @@
 """
+DEPRECATED -- nhl.com no longer supports this data
+
 team_games_scraper.py
 Author: Brian Boates
 """

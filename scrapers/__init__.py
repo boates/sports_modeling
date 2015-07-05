@@ -1,9 +1,5 @@
 from nhl import GamesScraper
-from nhl import TeamGamesScraper
-from nhl import TeamGamePenaltiesScraper
 
-nhl_scrapers = [GamesScraper(),
-                TeamGamesScraper(),
-                TeamGamePenaltiesScraper()]
+nhl_scrapers = [GamesScraper()]
 
 default_scraper_sets = {'nhl': nhl_scrapers}

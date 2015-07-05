@@ -2,6 +2,8 @@
 nhl_utils.py
 Author: Brian Boates
 """
+from datetime import date
+
 def months():
     return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']

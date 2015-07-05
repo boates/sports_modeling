@@ -1,3 +1,1 @@
 from games_scraper import GamesScraper
-from team_games_scraper import TeamGamesScraper
-from team_game_penalties_scraper import TeamGamePenaltiesScraper
